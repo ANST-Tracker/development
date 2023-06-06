@@ -1,0 +1,31 @@
+name: deploy-dev
+
+on:
+  workflow_dispatch:
+    branches:
+      - main
+
+jobs:
+  update-secrets:
+    runs-on: ubuntu-latest
+    name: update-secrets
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: decrypt secrets
+        uses: anthonykgross/ansible-vault-cli-github-action@v1
+        with:
+          vault_key: ${{ secrets.VAULT_KEY_PROD }}
+          command: "ansible-vault decrypt ./secrets-prod.yaml"
+
+      - name: build deploy folder
+        run: |
+          mv secrets-prod.yaml secrets_profile.yaml
+          mv ./secrets_profile.yaml ./deploy
+
+      - name: transfer deploy folder
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.SSH_KEY_PROD }}"
+          rsync -e "ssh -o StrictHostKeyChecking=no" -rtvu ./deploy root@${{ secrets.HOST_IP_PROD }}:~/
