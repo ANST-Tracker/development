@@ -1,0 +1,156 @@
+---
+version: '3'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka1:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 9093:9093
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka_data_1:/var/lib/kafka/data
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 9094:9094
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka_data_2:/var/lib/kafka/data
+
+  mongo1:
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
+    restart: always
+    volumes:
+      - mongodb_data_1:/data/db
+    command: mongod --replSet dev-mongo-set --bind_ip_all
+  mongo2:
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 27018:27017
+    restart: always
+    volumes:
+      - mongodb_data_2:/data/db
+    command: mongod --replSet dev-mongo-set --bind_ip_all
+  mongo3:
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 27019:27017
+    restart: always
+    volumes:
+      - mongodb_data_3:/data/db
+    command: mongod --replSet dev-mongo-set --bind_ip_all
+
+  mongoinit:
+    image: mongo
+    # this container will exit after executing the command
+    restart: "no"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    command: >
+      mongosh --host mongo1:27017 --eval 
+      '
+      db = (new Mongo("mongo1:27017")).getDB("test");
+      config = {
+      "_id" : "dev-mongo-set",
+      "members" : [
+        {
+          "_id" : 0,
+          "priority": 1,
+          "host" : "mongo1:27017"
+        },
+        {
+          "_id" : 1,
+          "priority": 0.5,
+          "host" : "mongo2:27017"
+        },
+        {
+          "_id" : 2,
+          "priority": 0.5,
+          "host" : "mongo3:27017"
+        }
+      ]
+      };
+      rs.initiate(config);
+      '
+  postgres:
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  redis:
+    image: redis:7-alpine
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - 6379:6379
+
+  core-api:
+    image: allokanic/api
+    depends_on:
+      - mongoinit
+      - kafka1
+      - kafka2
+      - redis
+      - postgres
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    restart: always
+
+  tg-bot:
+    image: allokanic/bot
+    depends_on:
+      - mongoinit
+      - kafka1
+      - kafka2
+      - redis
+      - postgres
+    restart: always
+
+volumes:
+  postgres_volume:
+  mongodb_data_1:
+  mongodb_data_2:
+  mongodb_data_3:
+  kafka_data_1:
+  kafka_data_2:
+  redis_data:
