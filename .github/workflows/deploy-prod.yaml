@@ -18,6 +18,16 @@ jobs:
           mv secrets-prod.yaml secrets_profile.yaml
           mv ./secrets_profile.yaml ./deploy
 
+      - name: stop old docker-compose if changed
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.SSH_KEY_DEV }}"
+          ssh -o StrictHostKeyChecking=no -tt root@${{ secrets.HOST_IP_DEV }} << EOT
+            cd deploy
+            docker-compose down
+            exit
+          EOT
+
       - name: transfer deploy folder
         run: |
           eval `ssh-agent -s`
