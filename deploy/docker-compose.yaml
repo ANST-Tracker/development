@@ -111,7 +111,7 @@ services:
     ports:
       - 6379:6379
 
-  core-api:
+  api:
     image: allokanic/api
     depends_on:
       - mongoinit
@@ -132,7 +132,6 @@ services:
       - kafka-ui
       - redis
       - postgres
-      - core-api
     env_file:
       - secrets_profile.yaml
     restart: always
