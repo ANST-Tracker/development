@@ -1,0 +1,39 @@
+name: deploy-prod
+
+on:
+  workflow_dispatch:
+    branches:
+      - main
+
+jobs:
+  update-secrets:
+    runs-on: ubuntu-latest
+    name: update-secrets
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: build deploy folder
+        run: |
+          mv secrets-dev.yaml secrets_profile.yaml
+          mv ./secrets_profile.yaml ./deploy
+
+      - name: transfer deploy folder
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.SSH_KEY_PROD }}"
+          rsync -e "ssh -o StrictHostKeyChecking=no" -rtvu ./deploy root@${{ secrets.HOST_IP_PROD }}:~/
+
+      - name:
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.SSH_KEY_PROD }}"
+          ssh -o StrictHostKeyChecking=no -tt root@${{ secrets.HOST_IP_PROD }} << EOT
+            cd deploy
+            echo ${{ secrets.VAULT_KEY_PROD }} > pass.txt
+            ansible-vault decrypt --vault-password-file pass.txt secrets_profile.yaml
+            rm ./pass.txt
+            docker-compose down
+            docker-compose up -d
+            exit
+          EOT

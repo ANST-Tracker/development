@@ -16,7 +16,6 @@ jobs:
       - name: build deploy folder
         run: |
           mv secrets-dev.yaml secrets_profile.yaml
-          chmod 644 secrets_profile.yaml
           mv ./secrets_profile.yaml ./deploy
           
       - name: transfer deploy folder
