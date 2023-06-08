@@ -1,0 +1,27 @@
+name: send-updates
+
+on:
+#  push:
+#    branches:
+#      - '*'
+  workflow_call:
+    inputs:
+      message:
+        required: true
+        type: string
+    secrets:
+      tg_to:
+        required: true
+      tg_token:
+        required: true
+
+jobs:
+  send_update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: send telegram message on action
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.tg_to }}
+          token: ${{ secrets.tg_token }}
+          message: ${{ inputs.message }}
