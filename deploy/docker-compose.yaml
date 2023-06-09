@@ -25,7 +25,7 @@ services:
   kafka-ui:
     image: provectuslabs/kafka-ui
     ports:
-      - 8081:8080
+      - "10.0.11.1:8080:8080"
     environment:
       - KAFKA_CLUSTERS_0_NAME=kafka
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
@@ -36,7 +36,7 @@ services:
   mongo1:
     image: mongo
     ports:
-      - 27017:27017
+      - "10.0.11.1:27017:27017"
     restart: always
     volumes:
       - mongodb_data_1:/data/db
@@ -44,7 +44,7 @@ services:
   mongo2:
     image: mongo
     ports:
-      - 27018:27017
+      - "10.0.11.1:27018:27017"
     restart: always
     volumes:
       - mongodb_data_2:/data/db
@@ -52,7 +52,7 @@ services:
   mongo3:
     image: mongo
     ports:
-      - 27019:27017
+      - "10.0.11.1:27019:27017"
     restart: always
     volumes:
       - mongodb_data_3:/data/db
@@ -100,8 +100,16 @@ services:
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "10.0.11.1:5432:5432"
 
+  pgadmin:
+    image: thajeztah/pgadmin4
+    ports:
+    - 10.0.11.1:5050:5050/tcp
+    restart: always
+    depends_on:
+      - postgres
+      
   redis:
     image: redis:7-alpine
     environment:
@@ -109,7 +117,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - 6379:6379
+      - 10.0.11.1:6379:6379
 
   api:
     image: allokanic/api

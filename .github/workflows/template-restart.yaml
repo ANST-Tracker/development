@@ -1,0 +1,45 @@
+on:
+  workflow_call:
+    inputs:
+      secrets-file:
+        type: string
+        required: true
+    secrets:
+      ssh-key:
+        required: true
+      host-ip:
+        required: true
+      vault-key:
+        required: true
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: build deploy folder
+        run: |
+          mv ${{ inputs.secrets-file }} secrets_profile.yaml
+          mv ./secrets_profile.yaml ./deploy
+
+      - name: transfer
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.ssh-key }}"
+          rsync -e "ssh -o StrictHostKeyChecking=no" -rtvu ./deploy root@${{ secrets.host-ip }}:~/
+
+      - name: restart
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.ssh-key }}"
+          ssh -o StrictHostKeyChecking=no -tt root@${{ secrets.host-ip }} << EOT
+            cd deploy
+            echo ${{ secrets.vault-key }} > pass.txt
+            ansible-vault decrypt --vault-password-file pass.txt secrets_profile.yaml
+            rm ./pass.txt
+            docker-compose down
+            docker-compose up -d
+            exit
+          EOT

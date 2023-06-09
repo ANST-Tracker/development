@@ -10,9 +10,9 @@ on:
         required: true
         type: string
     secrets:
-      tg_to:
+      TG_ALLOKANIC_ID:
         required: true
-      tg_token:
+      TG_BOT_TOKEN:
         required: true
 
 jobs:
@@ -22,6 +22,6 @@ jobs:
       - name: send telegram message on action
         uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.tg_to }}
-          token: ${{ secrets.tg_token }}
+          to: ${{ secrets.TG_ALLOKANIC_ID }}
+          token: ${{ secrets.TG_BOT_TOKEN }}
           message: ${{ inputs.message }}

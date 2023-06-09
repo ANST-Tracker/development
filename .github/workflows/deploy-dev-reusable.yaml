@@ -1,0 +1,51 @@
+name: deploy-dev-reusable
+
+on:
+  workflow_dispatch:
+    branches:
+      - dev
+  
+jobs:
+  stop:
+    uses: ./.github/workflows/template-stop.yaml
+    secrets:
+      ssh-key: ${{ secrets.SSH_KEY_DEV }}
+      host-ip: ${{ secrets.HOST_IP_DEV }}
+
+  inform:
+    needs: stop
+    uses: ./.github/workflows/template-telegram.yaml
+    with:
+      message: |
+        Cluster: DEV 
+        Redeploy status: STARTED
+    secrets: inherit
+
+  restart:
+    needs: inform
+    uses: ./.github/workflows/template-restart.yaml
+    with:
+      secrets-file: secrets-dev.yaml
+    secrets:
+      ssh-key: ${{ secrets.SSH_KEY_DEV }}
+      host-ip: ${{ secrets.HOST_IP_DEV }}
+      vault-key: ${{ secrets.VAULT_KEY_DEV }}
+
+  inform-about-success:
+    needs: restart
+    uses: ./.github/workflows/template-telegram.yaml
+    with:
+      message: |
+        Cluster: DEV 
+        Redeploy status: SUCCESS
+    secrets: inherit
+
+  inform-about-failure:
+    needs: restart
+    if: ${{ failure() && needs.restart.result == 'failure' }}
+    uses: ./.github/workflows/template-telegram.yaml
+    with:
+      message: |
+        Cluster: DEV 
+        Redeploy status: FAILED
+    secrets: inherit

@@ -1,0 +1,21 @@
+on:
+  workflow_call:
+    secrets:
+      ssh-key:
+        required: true
+      host-ip:
+        required: true
+
+jobs:
+  stop-old-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: stop old docker-compose if changed
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.ssh-key }}"
+          ssh -o StrictHostKeyChecking=no -tt root@${{ secrets.host-ip }} << EOT
+            cd deploy
+            docker-compose down
+            exit
+          EOT
