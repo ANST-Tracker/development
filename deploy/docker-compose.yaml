@@ -149,6 +149,4 @@ volumes:
   mongodb_data_1:
   mongodb_data_2:
   mongodb_data_3:
-  kafka_data_1:
-  kafka_data_2:
   redis_data:
