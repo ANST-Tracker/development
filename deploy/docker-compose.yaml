@@ -102,14 +102,6 @@ services:
     ports:
       - "10.0.11.1:5432:5432"
 
-  pgadmin:
-    image: thajeztah/pgadmin4
-    ports:
-    - 10.0.11.1:5050:5050/tcp
-    restart: always
-    depends_on:
-      - postgres
-      
   redis:
     image: redis:7-alpine
     environment:
