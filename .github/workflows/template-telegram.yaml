@@ -12,16 +12,28 @@ on:
     secrets:
       TG_ALLOKANIC_ID:
         required: true
+      TG_PESTRIK_ID:
+        required: true
       TG_BOT_TOKEN:
         required: true
 
 jobs:
-  send_update:
+  send_update_allok:
     runs-on: ubuntu-latest
     steps:
       - name: send telegram message on action
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TG_ALLOKANIC_ID }}
+          token: ${{ secrets.TG_BOT_TOKEN }}
+          message: ${{ inputs.message }}
+
+  send_update_pestrik:
+    runs-on: ubuntu-latest
+    steps:
+      - name: send telegram message on action
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TG_PESTRIK_ID }}
           token: ${{ secrets.TG_BOT_TOKEN }}
           message: ${{ inputs.message }}
