@@ -101,6 +101,7 @@ services:
       - postgres_volume:/var/lib/postgresql/data
     ports:
       - "10.0.11.1:5432:5432"
+    restart: always
 
   redis:
     image: redis:7-alpine
@@ -110,6 +111,7 @@ services:
       - redis_data:/data
     ports:
       - 10.0.11.1:6379:6379
+    restart: always
 
   api:
     image: allokanic/api
