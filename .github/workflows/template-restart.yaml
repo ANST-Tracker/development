@@ -21,8 +21,8 @@ jobs:
 
       - name: build deploy folder
         run: |
-          mv ${{ inputs.secrets-file }} secrets_profile.yaml
-          mv ./secrets_profile.yaml ./deploy
+          mv ${{ inputs.secrets-file }} .env
+          mv ./.env ./deploy
 
       - name: transfer
         run: |
@@ -37,7 +37,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -tt root@${{ secrets.host-ip }} << EOT
             cd deploy
             echo ${{ secrets.vault-key }} > pass.txt
-            ansible-vault decrypt --vault-password-file pass.txt secrets_profile.yaml
+            ansible-vault decrypt --vault-password-file pass.txt .env
             rm ./pass.txt
             docker-compose down
             docker-compose up -d

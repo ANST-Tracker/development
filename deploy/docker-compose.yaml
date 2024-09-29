@@ -116,7 +116,7 @@ services:
     ports:
       - "5433:5432"
     env_file:
-      - secrets_profile.yaml
+      - .env
     restart: always
 
   redis:
@@ -139,7 +139,7 @@ services:
     ports:
       - 80:8080
     env_file:
-      - secrets_profile.yaml
+      - .env
     restart: always
 
   tg-bot:
@@ -151,7 +151,7 @@ services:
       - redis
       - postgres
     env_file:
-      - secrets_profile.yaml
+      - .env
     restart: always
 
 volumes:
