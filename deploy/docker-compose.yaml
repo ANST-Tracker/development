@@ -109,12 +109,14 @@ services:
   postgres:
     image: postgres:14.1-alpine
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     ports:
-      - "10.0.11.1:5432:5432"
+      - "5433:5432"
+    env_file:
+      - secrets_profile.yaml
     restart: always
 
   redis:
