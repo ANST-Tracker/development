@@ -115,8 +115,6 @@ services:
       - postgres_volume:/var/lib/postgresql/data
     ports:
       - "5433:5432"
-    env_file:
-      - .env
     restart: always
 
   redis:
