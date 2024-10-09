@@ -48,7 +48,7 @@ services:
     - kafka
 
   mongo1:
-    image: mongo:latest
+    image: mongo:8.0.0-rc13
     ports:
       - "10.0.11.1:27017:27017"
     restart: always
@@ -56,7 +56,7 @@ services:
       - mongodb_data_1:/data/db
     command: mongod --replSet dev-mongo-set --bind_ip_all
   mongo2:
-    image: mongo:latest
+    image: mongo:8.0.0-rc13
     ports:
       - "10.0.11.1:27018:27017"
     restart: always
@@ -64,7 +64,7 @@ services:
       - mongodb_data_2:/data/db
     command: mongod --replSet dev-mongo-set --bind_ip_all
   mongo3:
-    image: mongo:latest
+    image: mongo:8.0.0-rc13
     ports:
       - "10.0.11.1:27019:27017"
     restart: always
@@ -73,7 +73,7 @@ services:
     command: mongod --replSet dev-mongo-set --bind_ip_all
 
   mongoinit:
-    image: mongo:latest
+    image: mongo:8.0.0-rc13
     # this container will exit after executing the command
     restart: "no"
     depends_on:
