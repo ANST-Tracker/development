@@ -47,48 +47,14 @@ services:
     depends_on:
     - kafka
 
-  mongo1:
+  mongo:
     image: mongo:8.0.0-rc13
     ports:
       - "10.0.11.1:27017:27017"
     restart: always
     volumes:
-      - mongodb_data_1:/data/db
-    command: mongod --replSet dev-mongo-set --bind_ip_all
-  mongo2:
-    image: mongo:8.0.0-rc13
-    ports:
-      - "10.0.11.1:27018:27017"
-    restart: always
-    volumes:
-      - mongodb_data_2:/data/db
-    command: mongod --replSet dev-mongo-set --bind_ip_all
-  mongo3:
-    image: mongo:8.0.0-rc13
-    ports:
-      - "10.0.11.1:27019:27017"
-    restart: always
-    volumes:
-      - mongodb_data_3:/data/db
-    command: mongod --replSet dev-mongo-set --bind_ip_all
-
-  mongoinit:
-    image: mongo:8.0.0-rc13
-    restart: "no"
-    depends_on:
-      - mongo1
-      - mongo2
-      - mongo3
-    command: >
-      mongosh --host mongo1:27017 --eval "
-      rs.initiate({
-        _id: 'dev-mongo-set',
-        members: [
-          { _id: 0, host: 'mongo1:27017', priority: 1 },
-          { _id: 1, host: 'mongo2:27017', priority: 0.5 },
-          { _id: 2, host: 'mongo3:27017', priority: 0.5 }
-        ]
-      })"
+      - mongodb_data:/data/db
+    command: mongod --bind_ip_all
   
   postgres:
     image: postgres:14.1-alpine
@@ -116,7 +82,7 @@ services:
   api:
     image: allokanic/api
     depends_on:
-      - mongoinit
+      - mongo
       - kafka
       - redis
       - postgres
@@ -129,7 +95,7 @@ services:
   tg-bot:
     image: allokanic/tg-bot
     depends_on:
-      - mongoinit
+      - mongo
       - kafka
       - kafka-ui
       - redis
@@ -140,7 +106,5 @@ services:
     
 volumes:
   postgres_volume:
-  mongodb_data_1:
-  mongodb_data_2:
-  mongodb_data_3:
+  mongodb_data:
   redis_data:
