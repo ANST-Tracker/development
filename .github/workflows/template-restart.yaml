@@ -37,7 +37,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -tt root@${{ secrets.host-ip }} << EOT
             cd deploy
             echo ${{ secrets.vault-key }} > pass.txt
-            ansible-vault decrypt --vault-password-file pass.txt .env
+            ansible-vault decrypt --vault-password-file pass.txt secrets_profile.yaml
             rm ./pass.txt
             docker-compose down
             docker-compose up -d
