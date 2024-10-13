@@ -1,4 +1,3 @@
----
 version: '3'
 services:
   zookeeper:
@@ -153,7 +152,7 @@ services:
     env_file:
       - secrets_profile.yaml
     restart: always
-
+    
 volumes:
   postgres_volume:
   mongodb_data_1:
