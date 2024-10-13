@@ -80,31 +80,15 @@ services:
       - mongo2
       - mongo3
     command: >
-      mongosh --host mongo1:27017 --eval 
-      '
-      db = (new Mongo("mongo1:27017")).getDB("test");
-      config = {
-      "_id" : "dev-mongo-set",
-      "members" : [
-        {
-          "_id" : 0,
-          "priority": 1,
-          "host" : "mongo1:27017"
-        },
-        {
-          "_id" : 1,
-          "priority": 0.5,
-          "host" : "mongo2:27017"
-        },
-        {
-          "_id" : 2,
-          "priority": 0.5,
-          "host" : "mongo3:27017"
-        }
-      ]
-      };
-      rs.initiate(config);
-      '
+      mongosh --host mongo1:27017 --eval "
+      rs.initiate({
+        _id: 'dev-mongo-set',
+        members: [
+          { _id: 0, host: 'mongo1:27017', priority: 1 },
+          { _id: 1, host: 'mongo2:27017', priority: 0.5 },
+          { _id: 2, host: 'mongo3:27017', priority: 0.5 }
+        ]
+      })"
   
   postgres:
     image: postgres:14.1-alpine
