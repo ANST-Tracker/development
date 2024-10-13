@@ -47,64 +47,64 @@ services:
     depends_on:
     - kafka
 
-  mongo1:
-    image: mongo:8.0.0-rc13
-    ports:
-      - "10.0.11.1:27017:27017"
-    restart: always
-    volumes:
-      - mongodb_data_1:/data/db
-    command: mongod --replSet dev-mongo-set --bind_ip_all
-  mongo2:
-    image: mongo:8.0.0-rc13
-    ports:
-      - "10.0.11.1:27018:27017"
-    restart: always
-    volumes:
-      - mongodb_data_2:/data/db
-    command: mongod --replSet dev-mongo-set --bind_ip_all
-  mongo3:
-    image: mongo:8.0.0-rc13
-    ports:
-      - "10.0.11.1:27019:27017"
-    restart: always
-    volumes:
-      - mongodb_data_3:/data/db
-    command: mongod --replSet dev-mongo-set --bind_ip_all
+  # mongo1:
+  #   image: mongo:8.0.0-rc13
+  #   ports:
+  #     - "10.0.11.1:27017:27017"
+  #   restart: always
+  #   volumes:
+  #     - mongodb_data_1:/data/db
+  #   command: mongod --replSet dev-mongo-set --bind_ip_all
+  # mongo2:
+  #   image: mongo:8.0.0-rc13
+  #   ports:
+  #     - "10.0.11.1:27018:27017"
+  #   restart: always
+  #   volumes:
+  #     - mongodb_data_2:/data/db
+  #   command: mongod --replSet dev-mongo-set --bind_ip_all
+  # mongo3:
+  #   image: mongo:8.0.0-rc13
+  #   ports:
+  #     - "10.0.11.1:27019:27017"
+  #   restart: always
+  #   volumes:
+  #     - mongodb_data_3:/data/db
+  #   command: mongod --replSet dev-mongo-set --bind_ip_all
 
-  mongoinit:
-    image: mongo:8.0.0-rc13
-    restart: "no"
-    depends_on:
-      - mongo1
-      - mongo2
-      - mongo3
-    command: >
-      mongosh --host mongo1:27017 --eval 
-      '
-      db = (new Mongo("mongo1:27017")).getDB("test");
-      config = {
-      "_id" : "dev-mongo-set",
-      "members" : [
-        {
-          "_id" : 0,
-          "priority": 1,
-          "host" : "mongo1:27017"
-        },
-        {
-          "_id" : 1,
-          "priority": 0.5,
-          "host" : "mongo2:27017"
-        },
-        {
-          "_id" : 2,
-          "priority": 0.5,
-          "host" : "mongo3:27017"
-        }
-      ]
-      };
-      rs.initiate(config);
-      '
+  # mongoinit:
+  #   image: mongo:8.0.0-rc13
+  #   restart: "no"
+  #   depends_on:
+  #     - mongo1
+  #     - mongo2
+  #     - mongo3
+  #   command: >
+  #     mongosh --host mongo1:27017 --eval 
+  #     '
+  #     db = (new Mongo("mongo1:27017")).getDB("test");
+  #     config = {
+  #     "_id" : "dev-mongo-set",
+  #     "members" : [
+  #       {
+  #         "_id" : 0,
+  #         "priority": 1,
+  #         "host" : "mongo1:27017"
+  #       },
+  #       {
+  #         "_id" : 1,
+  #         "priority": 0.5,
+  #         "host" : "mongo2:27017"
+  #       },
+  #       {
+  #         "_id" : 2,
+  #         "priority": 0.5,
+  #         "host" : "mongo3:27017"
+  #       }
+  #     ]
+  #     };
+  #     rs.initiate(config);
+  #     '
   
   postgres:
     image: postgres:14.1-alpine
