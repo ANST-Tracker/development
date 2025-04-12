@@ -38,9 +38,10 @@ services:
     container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
     ports:
-    - "10.0.11.1:8080:8080"
+    - "8080:8090"
     environment:
-      AUTH_TYPE: DISABLED
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRYAUTH_USERNAME: admin
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRYAUTH_PASSWORD: trckr5235823862!
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
