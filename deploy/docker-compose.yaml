@@ -1,6 +1,19 @@
 version: '3'
 
 services:
+  minio:
+    image: docker.io/bitnami/minio:2022
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    networks:
+      - minionetwork
+    volumes:
+      - 'minio_data:/data'
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=trckr523528356826!
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.2.1
     hostname: zookeeper
@@ -107,8 +120,14 @@ services:
     env_file:
       - secrets_profile.yaml
     restart: always
-    
+
+networks:
+  minionetwork:
+    driver: bridge
+
 volumes:
   postgres_volume:
   mongodb_data:
   redis_data:
+  minio_data:
+    driver: local
