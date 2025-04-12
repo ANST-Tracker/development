@@ -38,7 +38,7 @@ services:
     container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
     ports:
-    - "8080:8090"
+    - "8080:8080"
     environment:
       KAFKA_CLUSTERS_0_SCHEMAREGISTRYAUTH_USERNAME: admin
       KAFKA_CLUSTERS_0_SCHEMAREGISTRYAUTH_PASSWORD: trckr5235823862!
@@ -90,7 +90,7 @@ services:
       - redis
       - postgres
     ports:
-      - 80:8080
+      - 80:8090
     env_file:
       - secrets_profile.yaml
     restart: always
