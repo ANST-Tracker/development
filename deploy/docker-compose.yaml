@@ -93,7 +93,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - 10.0.11.1:6379:6379
+      - 6379:6379
     restart: always
 
   api:
