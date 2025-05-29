@@ -104,7 +104,7 @@ services:
       - redis
       - postgres
     ports:
-      - 80:8080
+      - 8090:8080
     env_file:
       - secrets_profile.yaml
     restart: always
@@ -120,6 +120,12 @@ services:
     env_file:
       - secrets_profile.yaml
     restart: always
+
+  front-prod:
+    image: allokanic/greend
+    restart: always
+    ports:
+      - 80:80
 
 networks:
   minionetwork:
