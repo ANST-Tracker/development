@@ -50,7 +50,6 @@ services:
     environment:
       AUTH_TYPE: LOGIN_FORM
       SPRING_SECURITY_USER_NAME: admin
-      SPRING_SECURITY_USER_PASSWORD: ${KAFKA_PASSWORD}
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
@@ -74,7 +73,6 @@ services:
     image: postgres:14.1-alpine
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     ports:
@@ -85,8 +83,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
     ports:
