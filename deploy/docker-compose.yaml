@@ -86,7 +86,7 @@ services:
   redis:
     image: redis:7-alpine
     environment:
-      - REQUIRED_PASSWORD=${REDIS_PASSWORD}
+      - ENV_REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
     ports:
